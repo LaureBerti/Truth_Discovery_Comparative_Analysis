@@ -2,7 +2,7 @@
 Java implementation of truth discovery algorithms
 
 
-This repository contains all the Java source code of truth discovery methods used for the comparative analysis of our Arxiv paper [CoRR abs/1409.6428]
+This repository contains all the Java source code of truth discovery methods used for the comparative analysis of our [Arxiv paper CoRR abs/1409.6428](https://arxiv.org/abs/1409.6428)
 
 The main goal of this project was to design a scalable and accurate truth discovery system to score the veracity of structured data extracted from multiple online sources.
 
