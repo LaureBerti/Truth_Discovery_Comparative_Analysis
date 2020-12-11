@@ -1,0 +1,2 @@
+# Truth_Discovery_Comparative_Analysis
+Java implementation of truth discovery algorithms
