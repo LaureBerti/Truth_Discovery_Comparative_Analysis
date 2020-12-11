@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<style>
+img.class_dsGraph
+{width:300px;
+ height:250px;}
+</style>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#div_datasets_content').load('realworldDS/rwds.html');
+
+		$(function() {
+			$("#nav_rwds").click(function() {$('#div_datasets_content').load('realworldDS/rwds.html');});
+			$("#nav_syntheticDs").click(function() {$('#div_datasets_content').load('realworldDS/synthetic/syntheticDs.html');});
+
+		});
+	})
+</script>
+<body>
+<h1>Data Sets</h1>
+<div  style="display: block; float: left; ">
+	<div class="nav" style="display: block;">
+		<ul>
+			<li><a id="nav_rwds">Real-World Data Sets </a></li>
+			<li><a id="nav_syntheticDs">Synthetic Data Sets </a></li>
+		</ul>
+	</div>
+</div><br/>
+<div id="div_datasets_content"></div>
+
+
+
+
+</body>
+</html>

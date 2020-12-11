@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"><script type="text/javascript">var NREUMQ=NREUMQ||[];NREUMQ.push(["mark","firstbyte",new Date().getTime()]);</script>
+  <title>Allegator Track API</title>
+  <link href="application-d167cccff2d070558a86f25fc5ce453f.css" media="screen" rel="stylesheet" type="text/css">
+  <script src="application-66ac45f4175f7564d107dd9489a999bf.js" type="text/javascript"></script>
+  <meta content="authenticity_token" name="csrf-param">
+<meta content="98leWqLJc1xkV+yX52uiQa1W9zKT/gB42H8Ub47z0uo=" name="csrf-token">
+</head>
+<body>
+  <section id="main">
+    <div class="topbar">
+      <div class="fill">
+        <div class="container-fluid">
+          <span class="brand">
+            <a href="http://allegatortrack.qcridemos.org/">AllegatorTrack API</a>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="content" style="margin: 20px">
+
+      <link href="/documentation-52852184bec4e93d24d37bf6c47c2b84.css" media="screen" rel="stylesheet" type="text/css">
+
+<h1>REST API Reference</h1>
+
+
+
+  <h2>Datasets Endpoint</h2>
+  <ol>
+    <li><a href="#toc_listing">Listing Datasets</a></li>
+    <!--<li><a href="#toc_showing">Showing Datasets</a></li>-->
+    <li><a href="#toc_creating">Creating Datasets</a></li>
+    <li><a href="#toc_params">Parameters</a></li>
+    <li><a href="#toc_deleting">Deleting Datasets</a></li>
+  </ol>
+
+<h4> Note that 'user_token' parameter must be supplied with every request. </h4>
+<br>
+<!-- LISTING -->
+
+  <h2 id="toc_listing">Listing Datasets</h2>
+  <h3>Request</h3>
+<pre>  GET http://allegatortrack.qcridemos.org/datasets/
+</pre>
+  <h4>Response</h4>
+<table>
+  <tbody><tr>
+    <th>Status Code</th>
+    <th>Meaning</th>
+    <th>Body</th>
+  </tr>
+    
+<tr>
+  <td>200</td>
+  <td>OK</td>
+  <td>
+      <pre>[DS1, DS22, ...]</pre>
+Where the format of DS<i>n</i> is:
+<pre>{
+  draw: &lt;draw&gt;,
+  recordsTotal: &lt;Number of Records&gt;,
+  recordsFiltered: &lt;Number of filtered Records&gt;,
+  data: &lt;data&gt;,
+  s3_direct_post: &lt;date_time&gt;,
+  fields: &lt;date_time&gt;,
+  key: &lt;date_time&gt;,
+  policy: &lt;policy&gt;,
+  signature: &lt;signature&gt;,
+  success_action_status: &lt;status&gt;,
+}</pre>
+
+  </td>
+</tr>
+
+    
+<tr>
+  <td>401</td>
+  <td>Unauthorized</td>
+  <td>
+      -
+  </td>
+</tr>
+
+</tbody></table>
+
+  <a href="#">Back to top</a>
+  <hr>
+
+<!-- SHOWING -->
+<!--
+  <h2 id="toc_showing">Showing a Dataset having id=&lt;id&gt;</h2>
+  <h3>Request</h3>
+<pre>  GET http://profiles.quran.com/api/v1/tags/&lt;id&gt;
+</pre>
+  <h4>Response</h4>
+<table>
+  <tbody><tr>
+    <th>Status Code</th>
+    <th>Meaning</th>
+    <th>Body</th>
+  </tr>
+    
+<tr>
+  <td>200</td>
+  <td>OK</td>
+  <td>
+      <pre>{
+  id: &lt;id&gt;,
+  name: &lt;Any&gt;,
+  color: &lt;#000000 to #FFFFFF&gt;,
+  etag: &lt;Valid etag&gt;,
+  created_at: &lt;date_time&gt;,
+  updated_at: &lt;date_time&gt;,
+}</pre>
+The pointer object only has either page or chapter/verse combination
+  </td>
+</tr>
+
+    
+<tr>
+  <td>401</td>
+  <td>Unauthorized</td>
+  <td>
+      -
+  </td>
+</tr>
+
+    
+<tr>
+  <td>403</td>
+  <td>Forbidden</td>
+  <td>
+      -
+  </td>
+</tr>
+
+    
+<tr>
+  <td>404</td>
+  <td>Not found</td>
+  <td>
+      -
+  </td>
+</tr>
+
+</tbody></table>
+
+  <a href="#">Back to top</a>
+  <hr>
+-->
+<!-- CREATING -->
+
+  <h2 id="toc_creating">Creating a Dataset</h2>
+  <h3>Request</h3>
+<pre>  POST http://localhost:4000/datasets/
+</pre>
+
+  <h3>Body</h3>
+  <pre>  key1=val1&amp;key2=val2&amp;...</pre>Or
+  <pre>  {key1: val1, key2: val2, ...}</pre>
+  <h4>Response</h4>
+<table>
+  <tbody><tr>
+    <th>Status Code</th>
+    <th>Meaning</th>
+    <th>Body</th>
+  </tr>
+    
+<tr>
+  <td>200</td>
+  <td>Created</td>
+  <td>
+  -
+  </td>
+</tr>
+
+    
+<tr>
+  <td>401</td>
+  <td>Unauthorized</td>
+  <td>
+      -
+  </td>
+</tr>
+
+    
+<tr>
+  <td>422</td>
+  <td>Invalid</td>
+  <td>
+      <pre>{ATTRIBUTE1: [ERROR1, ERROR2, ...], ATTRIBUTE2: [ERROR1, ERROR2, ...]}</pre>
+Lists all errors that prohibited this Dataset from being processed, grouped by its attributes
+
+  </td>
+</tr>
+
+</tbody></table>
+
+  <a href="#">Back to top</a>
+  <hr>
+
+<!-- PARAMETERS TABLE -->
+
+    <h2 id="toc_params">Parameters for Dataset Create </h2>
+    <table>
+      <tbody><tr>
+        <th>Key</th>
+        <th>Required?</th>
+        <th>Allowed values</th>
+        <th>Description</th>
+      </tr>
+          <tr>
+  <td>user_token</td>
+  <td>Yes</td>
+  <td>Secret Token Provided to API User</td>
+  <td>For Authentication</td>
+</tr>
+
+          <tr>
+  <td>s3_key</td>
+  <td>No</td>
+  <td>your file's s3 key if uploaded at Amazon's s3</td>
+  <td>Location of file</td>
+</tr>
+
+          <tr>
+  <td>other_url</td>
+  <td>No</td>
+  <td>URL if dataset file is located somewhere else</td>
+  <td>One of s3_key or other_url must be provided for parsing dataset</td>
+</tr>
+
+   <tr>
+    <td>kind</td>
+    <td>Yes</td>
+    <td>claims, truth</td>
+    <td>Type of dataset</td>
+  </tr>
+
+   <tr>
+    <td>original_filename</td>
+    <td>Yes</td>
+    <td>name of the file</td>
+    <td>Any name that you want to give for identification in future</td>
+  </tr>
+
+    </tbody></table>
+  <a href="#">Back to top</a>
+  <hr>
+
+<!-- DELETING -->
+
+  <h2 id="toc_deleting">Deleting a Dataset having id=&lt;id&gt;</h2>
+  <h3>Request</h3>
+<pre>  DELETE http://allegatortrack.qcridemos.org/datasets/&lt;id&gt;
+</pre>
+  <h4>Response</h4>
+<table>
+  <tbody><tr>
+    <th>Status Code</th>
+    <th>Meaning</th>
+    <th>Body</th>
+  </tr>
+    
+<tr>
+  <td>200</td>
+  <td>Deleted</td>
+  <td>
+      -
+  </td>
+</tr>
+
+    
+<tr>
+  <td>401</td>
+  <td>Unauthorized</td>
+  <td>
+      -
+  </td>
+</tr>
+
+    
+<tr>
+  <td>403</td>
+  <td>Forbidden</td>
+  <td>
+      -
+  </td>
+</tr>
+
+    
+<tr>
+  <td>404</td>
+  <td>Not found</td>
+  <td>
+      -
+  </td>
+</tr>
+
+</tbody></table>
+
+  <a href="#">Back to top</a>
+  <hr>
+
+  <a href="http://allegatortrack.qcridemos.org/apidoc/index.html">Back to API Reference</a>
+  
+  <hr>
+
+
+    </div>
+  </section>
+
+<script type="text/javascript">if (!NREUMQ.f) { NREUMQ.f=function() {
+NREUMQ.push(["load",new Date().getTime()]);
+var e=document.createElement("script");
+e.type="text/javascript";
+e.src=(("http:"===document.location.protocol)?"http:":"https:") + "//" +
+  "js-agent.newrelic.com/nr-100.js";
+document.body.appendChild(e);
+if(NREUMQ.a)NREUMQ.a();
+};
+NREUMQ.a=window.onload;window.onload=NREUMQ.f;
+};
+NREUMQ.push(["nrfj","beacon-3.newrelic.com","4b0a6f38f5","3242029","JQsIQ0cMXgpRRxhRWwURC1JbF1MSXVpZGlUWDTlFUAVXFFFbVFA=",10,22,new Date().getTime(),"","","","",""]);</script>
+
+<script src="nr-100.js" type="text/javascript"></script><script src="4b0a6f38f5" type="text/javascript"></script></body></html>

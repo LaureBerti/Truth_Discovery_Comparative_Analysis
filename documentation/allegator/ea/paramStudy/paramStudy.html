@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+
+<html>
+<HEAD>
+<style>
+.table_paramStudy 
+{
+border-collapse:collapse;
+}
+.table_paramStudy th, td
+{
+border: 1px solid black;
+ text-align:center; 
+ padding:10px;
+}
+</style>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+
+		$(function() {
+			$("#nav_goToTFparaS").click(function() {$('#div_paramStudyContent').load('paramStudy/TF/study.html');});
+			$("#nav_goToCosine23EstparaS").click(function() {$('#div_paramStudyContent').load('paramStudy/corrob/study.html');});
+			$("#nav_goToLTMparaS").click(function() {$('#div_paramStudyContent').load('paramStudy/LTM/study.html');});
+			$("#nav_goToMLEparaS").click(function() {$('#div_paramStudyContent').load('paramStudy/MLE/study.html');});
+			$("#nav_goToSrcDepenparaS").click(function() {$('#div_paramStudyContent').load('paramStudy/srcDependence/study.html');});
+			$("#nav_goToLCAparaS").click(function() {$('#div_paramStudyContent').load('paramStudy/LCA/study.html');});
+		});
+	})
+</script>
+</HEAD>
+<body>
+<h1>Parameter Setting Study</h1>
+<div class="nav" style="display: block;float: left;">
+		<ul>
+			<li><a id="nav_goToTFparaS">TruthFinder </a></li>
+			<li><a id="nav_goToCosine23EstparaS">Cosine, 2-Estimates and 3-Estimates </a></li>
+			<li><a id="nav_goToLTMparaS">LTM</a></li>
+			<li><a id="nav_goToMLEparaS">MLE</a></li>
+			<li><a id="nav_goToSrcDepenparaS">Source Dependence-Aware Models</a></li>
+			<li><a id="nav_goToLCAparaS">LCA</a></li>
+		</ul>
+		<br />
+		
+	</div><br /><br />
+	<div id="div_paramStudyContent">
+	
+	In our Parameterization Study, we study the effect of changing the value of each
+	truth discovery algorithm parameter on the algorithm quality.
+	<br />
+	<br /> The study is based on the Book data set, which we reformated in the various
+   formats required by the different truth discovery models:
+   <ul>
+	<li> For LTM, the data set should contain only one
+	attribute with a single atomic value, and more than one claimed value
+	can be considered true by LTM.
+  </li>
+	<li> For MLE, the data set should only have Boolean positive value.
+   </li>
+    </ul>
+  <br />  So we reformatted the Book data from (ClaimID, SourceID, ThisBook:AuthorNames, (AuthorA,AuthorB)) to
+       <ul>
+	<li>(ClaimID1, SourceID, ThisBook:AuthorNames, AuthorA)     and
+(ClaimID2, SourceID, ThisBook:AuthorNames, AuthorB) for LTM   and
+  </li>
+  <li>
+  (ClaimID1, SourceID, ThisBook:AuthorA-IsAuthor, True) and 
+  (ClaimID2, SourceID, ThisBook:AuthorB-IsAuthor, True) for MLE 
+   </li>
+   </ul>
+</body>
+</html>

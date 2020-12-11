@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#div_rwds_content').load('realworldDS/book.html');
+
+		$(function() {
+			$("#nav_bookDs").click(function() {$('#div_rwds_content').load('realworldDS/book.html');});
+			$("#nav_flightDS").click(function() {$('#div_rwds_content').load('realworldDS/flight.html');});
+			$("#nav_weatherDS").click(function() {$('#div_rwds_content').load('realworldDS/weather.html');});
+			$("#nav_popDS").click(function() {$('#div_rwds_content').load('realworldDS/pop.html');});
+			$("#nav_bioDS").click(function() {$('#div_rwds_content').load('realworldDS/bio.html');});
+
+		});
+	})
+</script>
+<body>
+
+
+<h2>Real-World Data sets</h2>
+We applied the truth discovery algorithms on several real-world data sets. 
+Here, you will find the data sets downloadable, as well as its characteristics and
+ the representations of the distributions of the number of claims per source, true positive claims per source, and conflicts per data items.<br/>
+
+<div  style="display: block;float: left;">
+	<div class="nav" style="display: block;">
+		<br />
+		<ul>
+			<li><a id="nav_bookDs">Book Data Set </a></li>
+			<li><a id="nav_flightDS">Flight Data Set </a></li>
+			<li><a id="nav_weatherDS">Weather Data Set </a></li>
+			<li><a id="nav_popDS">Population Data Set </a></li>
+			<li><a id="nav_bioDS">Biography Data Set</a></li>
+
+		</ul>
+		<br />
+	</div>
+</div><br /><br /><br />
+<div id="div_rwds_content"></div>
+
+
+
+
+</body>
+</html>

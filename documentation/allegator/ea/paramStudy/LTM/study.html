@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<script type="text/javascript">
+    $(document).ready(function(){
+    	$('#LTM_Param_div50').load('paramStudy/LTM/LTMParam50.html');
+    	$('#LTM_Param_div500').load('paramStudy/LTM/LTMParam500.html');
+    	
+	})
+</script>
+<body>
+	<h1>LTM</h1>
+	LTM has a set of parameters, first (K,B and T) for (number Of Iterations, Burn-in and Thin) respectively, 
+	a set of values for (K, B, T) was proposed by the original paper authors, we present 2 of them in the following discussion.<br/>
+	As LTM depends on randomization, LTM results for the same dataset is different from one run to another. Thus, the author recommended to compute the precision as the average of the precision of 10 runs of the algorithm.
+	The next results are the average (&plusmn; standard deviation) of 100 runs, we augmented the number of runs in order to achieve the most accurate results.<br/>
+	<h2>Summary</h2>
+	<TABLE border="1" class="table_paramStudy">
+			<TR> <TD>(K, Burn, Thin)</TD><TD>(&beta;<sub>1</sub>,&beta;<sub>0</sub>)</TD>
+							<TD>(&alpha;<sub>11</sub>,&alpha;<sub>10</sub>,&alpha;<sub>01</sub>,&alpha;<sub>00</sub>)</TD><TD>Precision</TD></TR>
+			<TR> <TD rowspan="4">(50, 10, 1)</TD><TD>(0.1, 0.1)</TD><TD rowspan="2">(0.9, 0.1, 0.9, 0.1)</TD><TD rowspan="2">0.8582&plusmn;0.0061<br/>0.8578&plusmn;0.0054</TD></TR>
+			<TR>                                 <TD>(0.5, 0.5)</TD></TR>   
+			<TR>                                 <TD>(0.1, 0.1)</TD><TD rowspan="2">(0.1, 0.9, 0.1, 0.9)</TD><TD>Min (0.7394&plusmn;0.282)</TD></TR>
+			<TR>                                 <TD>(0.5, 0.5)</TD>                                         <TD>Min (0.6634&plusmn;0.3479)</TD></TR>    
+			<TR> <TD rowspan="4">(500, 100, 9)</TD><TD>(0.1, 0.1)</TD><TD rowspan="2">(0.9, 0.1, 0.9, 0.1)</TD><TD>Max (0.8590&plusmn;0.0054)</TD></TR>
+			<TR>                                   <TD>(0.5, 0.5)</TD>                                         <TD>Max (0.8599&plusmn;0.0057)</TD></TR>   
+			<TR>                                   <TD>(0.1, 0.1)</TD><TD rowspan="2">(0.1, 0.9, 0.1, 0.9)</TD><TD>Max (0.8588&plusmn;0.0057)</TD></TR>
+			<TR>                                   <TD>(0.5, 0.5)</TD>                                         <TD>Max (0.8580&plusmn;0.0051)</TD></TR>                                      
+		
+		</TABLE>
+		<h2>Details</h2>
+	<UL>
+		<LI>The next table shows LTM results for varying (&alpha;<sub>11</sub>,&alpha;<sub>10</sub>) for (K,B and T) = (50, 10, 1), 
+			for both &beta;<sub>1</sub>=&beta;<sub>0</sub> = 0.1 and &beta;<sub>1</sub>=&beta;<sub>0</sub> = 0.5, 
+			once fixing (&alpha;<sub>01</sub>,&alpha;<sub>00</sub>) = (0.9, 0.1), and once fixing (&alpha;<sub>01</sub>,&alpha;<sub>00</sub>) = (0.1, 0.9)  
+
+			<div id="LTM_Param_div50"></div><br/><br/>
+			We can see that for both &beta; values, and for high &alpha;<sub>01</sub>, high &alpha;<sub>10</sub>, low &alpha;<sub>00</sub> and low &alpha;<sub>11</sub>
+			LTM precision varies dramatically from one run to another.
+		 <br/><br/>
+		</LI>
+		
+		<LI>
+			Running the same experiments for (K, B, T) = (500, 100, 9)
+			<div id="LTM_Param_div500"></div>
+			<br/><br/>
+		</LI>
+	</UL>
+<!-- 	Finally, we choose (K, B, T) = (500, 100, 9); <br/>
+	(&alpha;<sub>01</sub>,&alpha;<sub>00</sub>) = (0.9, 0.1); <br/>
+	(&alpha;<sub>11</sub>,&alpha;<sub>10</sub>) = (0.9, 0.1); <br/>
+	and (&beta;<sub>1</sub>,&beta;<sub>1</sub>) = (0.5, 0.5); <br/>
+	These values that maximized the average precision, for a higher number of iterations. <br/> <br/>
+	 -->
+	<H2>Optimal parameter setting:</H2> 
+			<TABLE border="1" class="table_paramStudy">
+			<tr><th></th><th>Optimal Value</th></tr>
+			<tr>
+			<td>(K, B, T)</td><td>(500, 100, 9)</td>
+			</tr>
+			<tr>
+			<td>(&alpha;<sub>01</sub>,&alpha;<sub>00</sub>)   </td><td>(0.9, 0.1)</td>
+			</tr>
+			<tr>
+			<td>(&alpha;<sub>11</sub>,&alpha;<sub>10</sub>)</td><td>(0.9, 0.1)</td>
+			</tr>
+			<tr>
+			<td>(&beta;<sub>1</sub>,&beta;<sub>0</sub>)</td><td>(0.5, 0.5)</td>
+			</tr>
+			</TABLE>
+			
+</body>
+</html>

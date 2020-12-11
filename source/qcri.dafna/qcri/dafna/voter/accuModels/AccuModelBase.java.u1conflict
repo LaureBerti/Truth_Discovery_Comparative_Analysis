@@ -1,0 +1,375 @@
+package qcri.dafna.voter.accuModels;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
+import qcri.dafna.dataModel.data.DataSet;
+import qcri.dafna.dataModel.data.Source;
+import qcri.dafna.dataModel.data.SourceClaim;
+import qcri.dafna.dataModel.data.ValueBucket;
+import qcri.dafna.dataModel.dataFormatter.DataComparator;
+import qcri.dafna.dataModel.quality.dataQuality.ConvergenceTester;
+import qcri.dafna.voter.Voter;
+
+public class AccuModelBase extends Voter {
+
+	final double alfa;
+	final double c;
+	final double ita;
+	final int n;
+	final double base_sim;
+	final double similarityConstant;
+	/*------ Luna Impl----------*/
+	private double aprioriSameValueProbability;
+	private double sameValueProbability;
+	private double sameCorrectValueProbability;
+	private double sameIncorrectValueProbability;
+	/** A-priori probability of two data sources being independent. */
+	private final double APRIORI_INDEPENDENCE_PROBABILITY = 0.8;
+	/** A-priori probability of independence. */
+	private double aprioriIndependenceProbability = APRIORI_INDEPENDENCE_PROBABILITY;
+	/** A cached result for <code>1/aprioriIndependenceProbability-1</code>. */
+	private double aprioriIndependenceProbabilityPrime = 1/aprioriIndependenceProbability-1;
+	/*------ Luna Impl----------*/
+
+	private final double cosineSimilarityStoppingCondition;
+
+	private final boolean considerSimilarity;
+	private final boolean considerSourcesAccuracy;
+	/**
+	 * The dependencies between sources:
+	 * the key is the concatenation of source1 id and source2 id;
+	 */
+	private HashMap<String, Dependence> sourcesDependencies;
+
+	public AccuModelBase(DataSet dataSet, double alfa, double c, double ita, int n, double cosineSimStoppingCondition, 
+			double base_sim, double similarityConstant, boolean considerSimilarity, boolean considerSourcesAccuracy) {
+		super(dataSet);
+		this.considerSimilarity = considerSimilarity;
+		this.considerSourcesAccuracy = considerSourcesAccuracy;
+		this.base_sim = base_sim;
+		this.similarityConstant = similarityConstant;
+		this.cosineSimilarityStoppingCondition = cosineSimStoppingCondition;
+		this.alfa = alfa;
+		this.c = c;
+		this.ita = ita;
+		this.n = n;
+		this.aprioriSameValueProbability = Math.pow(ita, 3)/(double)n + Math.pow(1-ita, 3);//Math.pow(overallErrorRate, 3)/numOfWrongValues + Math.pow(1-overallErrorRate, 3);
+		this.sameValueProbability = (1-c)/aprioriSameValueProbability + c;//(1-changePercentage)/aprioriSameValueProbability + changePercentage;
+		this.sameCorrectValueProbability = (1-c*ita)/(1-ita);//(1-changePercentage*overallErrorRate)/(1-overallErrorRate);
+		this.sameIncorrectValueProbability = ((double)n-c*(double)n)/ita+c;//(numOfWrongValues-changePercentage*numOfWrongValues)/overallErrorRate+changePercentage;
+
+		sourcesDependencies = new HashMap<String, Dependence>();
+		String key;
+		for (Source s1 : dataSet.getSourcesHash().values()) {
+			for (Source s2 : dataSet.getSourcesHash().values()) {
+				key = s1.getSourceIdentifier() + s2.getSourceIdentifier();
+				if (sourcesDependencies.containsKey(s2.getSourceIdentifier() + s1.getSourceIdentifier())) {
+					continue;
+				}
+				if ( ! s1.getSourceIdentifier().equals(s2.getSourceIdentifier())) {
+					/* TODO still compute the dependencies when 2 sources have zero common data item ?? */
+					//					if (temp.getNumOfdifferentValues() != 0 || temp.getNumOfCommonFALSEValue() != 0 || temp.getNumOfCommonTRUEValue() != 0) {
+					sourcesDependencies.put(key, new Dependence(s1, s2));
+					//					}
+				}
+			}
+		}
+	}
+
+	@Override
+	protected void initParameters() {
+		singlePropertyValue = false; 
+		onlyMaxValueIsTrue = true;
+	}
+
+	@Override
+	protected int runVoter() {
+		int numOfIteration = 0;
+		double newTrustCosinSim, oldTrustCosinSim = 0;
+		boolean continueComputation = true;
+
+		/**
+		 * The model starts by initializing the sources trustworthiness.
+		 * so we need to compute the confidence.
+		 * but the true claim by voter need to be initialized before computing the confidence 
+		 * at First all claims are initialized to FALSE => TODO check this assumption
+		 */
+		computeDependencies(true);
+
+		while (continueComputation) {
+			numOfIteration ++;
+
+			computeConfidence();
+			if (considerSimilarity) {
+				computeConfidenceWithSimilarity();
+			}
+			computeSourcesTrustworthiness();
+
+			newTrustCosinSim = ConvergenceTester.computeTrustworthinessCosineSimilarity(dataSet);
+			System.out.print(numOfIteration + ": \t" + newTrustCosinSim + ". \t\t");
+			recomputTrueValues();
+			computeDependencies(false);
+
+			if (Math.abs(newTrustCosinSim - oldTrustCosinSim) < cosineSimilarityStoppingCondition) {
+				continueComputation = false;
+			}
+			oldTrustCosinSim = newTrustCosinSim;
+
+
+		}
+		return numOfIteration;
+	}
+
+	private void recomputTrueValues() {
+		for (List<SourceClaim> claimList : dataSet.getDataItemClaims().values()) {
+			for (SourceClaim claim : claimList) {
+				claim.setTrueClaimByVoter(false);
+			}
+		}
+		voterQuality.computeTruth(true);
+		voterQuality.computeVoterQualityMeasures(singlePropertyValue);
+		voterQuality.printMeasures();
+	}
+	/**
+	 * source trustworthiness = source accuracy
+	 */
+	private void computeSourcesTrustworthiness() {
+		double expConf;
+		double tempSum;
+		double sumOfProbOfBeingTrue;
+
+		for (Source src : dataSet.getSourcesHash().values()) {
+			sumOfProbOfBeingTrue = 0;
+			for (SourceClaim claim : src.getClaims()) {
+				expConf = Math.exp(claim.getBucket().getConfidence());
+				tempSum = 0;
+				for (ValueBucket bucket : dataSet.getDataItemsBuckets().get(claim.dataItemKey())) {
+					tempSum = tempSum + Math.exp(bucket.getConfidence());
+				}
+				// TODO this is the added N + 1 - |Vd|
+//				tempSum = tempSum + n + 1 - dataSet.getDataItemsBuckets().get(claim.dataItemKey()).size();
+				if (Double.isInfinite(expConf)) {
+					sumOfProbOfBeingTrue = sumOfProbOfBeingTrue + 1;
+				} else {
+					sumOfProbOfBeingTrue = sumOfProbOfBeingTrue + (expConf / tempSum);
+				}
+			}
+			src.setOldTrustworthiness(src.getTrustworthiness());
+			src.setTrustworthiness(sumOfProbOfBeingTrue/src.getClaims().size());
+		}
+	}
+
+	private void computeConfidence() {
+		double conf;
+		double SrcTrustScore;
+		double voteCount;
+		List<Source> orderedSources;
+		List<Source> pre;
+
+
+		for (List<ValueBucket> bucketsList : dataSet.getDataItemsBuckets().values()) {
+			for (ValueBucket bucket : bucketsList) {
+				pre = new ArrayList<Source>();
+				orderedSources = orderListByDependence(bucket.getSources());
+				conf = 0;
+				for (Source src : orderedSources) {
+					if (considerSourcesAccuracy) {
+						SrcTrustScore = computeTrustworthinessScore(src/*, numOfFalseValues*/);
+					} else {
+						SrcTrustScore = 1;
+					}
+					voteCount = calculateVoteCount(src, pre);
+					conf = conf + (SrcTrustScore * voteCount);
+					pre.add(src);
+				}
+				bucket.setConfidence(conf);
+			}
+		}
+	}
+	private void computeConfidenceWithSimilarity() {
+		double similarity;
+		double similaritySum;
+		for (List<ValueBucket> bucketList : dataSet.getDataItemsBuckets().values()) {
+			for (ValueBucket bucket1 : bucketList) {
+				if (Double.isInfinite(bucket1.getConfidence())) {
+					continue;  /* As Per Luna's implementation */
+				}
+				similaritySum = 0;
+				for (ValueBucket bucket2 : bucketList) {
+					if (Double.isInfinite(bucket2.getConfidence())) {
+						continue;  /* As Per Luna's implementation */
+					}
+					// test if same bucket and continue
+					if (bucket1.getId() == bucket2.getId()) {
+						continue;
+					}
+					similarity = computeClaimsSimilarity(bucket1, bucket2);
+					if(similarity != 0) {
+						similaritySum = similaritySum + (bucket2.getConfidence() * similarity);
+					}
+				}
+				/*
+				 * compute the similarity based on the confidence without similarity
+				 */
+				similaritySum = (similarityConstant * similaritySum) + bucket1.getConfidence();
+				bucket1.setConfidenceWithSimilarity(similaritySum);
+			}
+			/*
+			 * populate the confidence computed with similarity to be the exact new value for 
+			 * the claim confidence
+			 */
+			for (ValueBucket bucket : bucketList) {
+				bucket.setConfidence(bucket.getConfidenceWithSimilarity());
+			}
+		}
+	}
+	/**
+	 * Compute the similarity between the two given claims.
+	 * @param bucket1
+	 * @param bucket2
+	 * @return
+	 */
+	private double computeClaimsSimilarity(ValueBucket bucket1, ValueBucket bucket2) {
+		double result = DataComparator.computeImplication(bucket1, bucket2, bucket1.getValueType());
+		result = result - base_sim;
+		if (Double.isNaN(result)) {
+			return 1;
+		}
+		// TODO : revise for the non-string values  
+		return (double)result;
+	}
+
+	private double calculateVoteCount(Source src1, List<Source> pre) {
+		if (pre.isEmpty()) {
+			return 1.0;
+		}
+		double vote = 1;
+		Dependence depen;
+		String dependenceKey;
+		double copyingProbability;
+		for (Source s2 : pre) {
+			dependenceKey = src1.getSourceIdentifier() + s2.getSourceIdentifier();
+			depen = sourcesDependencies.get(dependenceKey);
+			if (depen != null) {
+				copyingProbability = depen.getDependence();
+			} else {
+				dependenceKey = s2.getSourceIdentifier() + src1.getSourceIdentifier();
+				depen = sourcesDependencies.get(dependenceKey);
+				copyingProbability = depen.getDependence();
+			}
+			vote = vote * (1 - c * copyingProbability);
+		}
+
+		return vote;
+	}
+
+	private List<Source> orderListByDependence(Set<Source> sList) {
+		List<Source> sourcesList = new ArrayList<Source>(sList);
+		List<Source> pre = new ArrayList<Source>();
+		pre.add(getSrcWithMaxDependence(sourcesList, sourcesList));
+		Source tempSource;
+		boolean duplicate;
+		while (! sourcesList.isEmpty()) {
+			tempSource = getSrcWithMaxDependence(sourcesList, pre);
+			duplicate = false;
+			for (Source s : pre) {
+				if (tempSource.getSourceIdentifier().equals(s.getSourceIdentifier())) {
+					duplicate = true;
+					break;
+				}
+			}
+			if (! duplicate) {
+				pre.add(tempSource);
+			}
+		}
+		return pre;
+	}
+
+
+	/**
+	 * Return the source from the sourcesList with maximal dependency with another source from preList .
+	 * remove this source from the given list
+	 * TODO test the removal of the source from the list given as parameter
+	 * @param sList
+	 * @param preList
+	 * @return
+	 */
+	private Source getSrcWithMaxDependence(List<Source> sourcesList, List<Source> preList) {
+		Source source1 = sourcesList.get(0);
+		if (sourcesList.size() == 1) {
+			sourcesList.remove(0);
+			return source1;
+		}
+		Source source2 = preList.get(0);
+		if (source2.getSourceIdentifier().equals(source1.getSourceIdentifier())) {
+			/*This is only for the first call of this method when we assign the same list for the 2 parameters
+			 * we are sure preList.size > 1 as it passed the check at the beginning of the method*/
+			source2 = preList.get(1);
+		}
+		int maxSourceIndex = 0;
+		String depenKey = source1.getSourceIdentifier() + source2.getSourceIdentifier();
+		Dependence dependenceTemp = sourcesDependencies.get(depenKey);
+		double maxDep;
+		if (dependenceTemp != null) {
+			maxDep = dependenceTemp.getProbabilityS1CopyingS2();
+		} else {
+			depenKey = source2.getSourceIdentifier() + source1.getSourceIdentifier();
+			dependenceTemp = sourcesDependencies.get(depenKey);
+			maxDep = dependenceTemp.getProbabilityS2CopyingS1();
+		}
+
+
+		double dep;
+		Source s1;
+		for ( int i = 0 ; i < sourcesList.size(); i ++) {
+			s1 = sourcesList.get(i);
+			for (Source s2 : preList) {
+				if (s1.getSourceIdentifier().equals(s2.getSourceIdentifier())) { // this shouldn't happen
+					continue;
+				}
+				depenKey = s1.getSourceIdentifier() + s2.getSourceIdentifier();
+				dependenceTemp = sourcesDependencies.get(depenKey);
+				if (dependenceTemp != null) {
+					dep = dependenceTemp.getProbabilityS1CopyingS2();
+				} else {
+					depenKey = s2.getSourceIdentifier() + s1.getSourceIdentifier();
+					dependenceTemp = sourcesDependencies.get(depenKey);
+					dep = dependenceTemp.getProbabilityS2CopyingS1();
+				}
+				if (dep > maxDep) {
+					source1 = s1;
+					source2 = s2;
+					maxDep = dep;
+					maxSourceIndex = i;
+				}
+			}
+		}
+		sourcesList.remove(maxSourceIndex);
+		return source1;
+	}
+
+	private void computeDependencies(boolean firstRound) {
+		for (Dependence depen : sourcesDependencies.values()) {
+			depen.recomputeTrueFalseCounts();
+			depen.computeUndDirectionalDependency(aprioriIndependenceProbability, alfa, ita, APRIORI_INDEPENDENCE_PROBABILITY);
+		}
+	}
+
+
+
+
+	/**
+	 * 
+	 * @param source
+	 * @param n: number of false values for the data item we are computing the confidence for.
+	 * @return
+	 */
+	private double computeTrustworthinessScore(Source source/* TODO  , double n*/) {
+		double score = ((double)n) * source.getTrustworthiness() / (1 - source.getTrustworthiness());
+		score = Math.log(score);
+		return score;
+	}
+}

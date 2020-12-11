@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN"
+   "http://www.w3.org/TR/html4/frameset.dtd">
+<HTML>
+<HEAD>
+<style type="text/css">
+* { font-family:Arial;}
+.nav li {
+	display: inline;
+	background-color: #dddddd;
+	margin: 0px 0px 25px;
+	border-bottom: #adb1b2 solid 1px;
+	padding: 15px 5px;
+}
+
+.nav ul {
+	margin: 0px;
+	padding: 0px;
+	text-align: center
+}
+
+.nav ul li {
+	margin: 0px;
+	padding: 0px 32px;
+	display: inline;
+	font-size: 15px;
+	list-style-type: none;
+	border-right: #868B8F dotted 2px;
+}
+
+.nav ul li a {
+	display: inline-block;
+	text-decoration: none;
+}
+
+.nav ul li a:hover {
+	text-decoration: underline;
+	cursor: pointer; cursor: hand;
+}
+
+.nav ul li:last-child {
+	border-right: none;
+}
+</style>
+
+<script type="text/javascript" src="ea/lib/jquery/jquery-1.11.1.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#banner').load('titleFrame.html');
+		$('#content').load('home.html');
+
+		$(function() {
+			$("#nav_home").click(function() {$('#content').load('home.html');});
+			$("#nav_code").click(function() {
+				$('#content').load('code/code.html');
+			});
+			$("#nav_paramS").click(function() {
+				$('#content').load('paramStudy/paramStudy.html');
+			});
+			$("#nav_compS").click(function() {
+				$('#content').load('comparativeStudy/compStudy.html');
+			});
+			$("#nav_dataset").click(function() {
+				$('#content').load('realworldDS/datasets.html');
+			});
+			$("#nav_scal").click(function() {
+				$('#content').load('scalability/scalability.html');
+			});
+			$("#nav_convergenceS").click(function() {
+				$('#content').load('convergenceStudy/conv.html');
+			});
+
+		});
+	})
+</script>
+
+<link type="text/css" rel="stylesheet"
+	href="ea/lib/syntaxHighlighter/css/SyntaxHighlighter.css"></link>
+<script language="javascript" src="ea/lib/syntaxHighlighter/js/shCore.js"></script>
+<script language="javascript"
+	src="ea/lib/syntaxHighlighter/js/shBrushJava.js"></script>
+<script language="javascript"
+	src="ea/lib/syntaxHighlighter/js/shBrushXml.js"></script>
+ 
+<H1 style="text-align: center">         
+ <div id="banner2"><img src="banner2.png" />                  </H1>
+
+</HEAD>
+<body>
+<table align="center">
+  
+<tr> <td align="center">
+
+
+                          <div style="width:50%; text-align: left; margin-left:auto; margin-right:auto;">
+  <p style="text-align:justify">
+In the Web, a massive amount of user-generated contents is available through
+ various channels, e.g., texts, tweets, Web tables, databases, multimedia-sharing platforms, 
+ etc. Conflicting information, rumors, erroneous and fake contents can be easily spread across
+  multiple sources, making it hard to distinguish between what is true and what is not. 
+  How do you figure out that a lie has been told often enough that it actually became the truth? 
+  How many lying sources are required to introduce confusion in what you knew before to be the truth? 
+  To answer these questions, we present AllegatorTrack, a system that discovers true claims among multi-source conflicting structured data and provides users comprehensive 
+  explanations of the computational truth discovery results.
+</p>
+
+
+<p style="text-align:justify">
+Test the demo: <a href="http://allegatortrack.qcridemos.org" target="_blank">AllegatorTrack</a>
+</p>
+</div>
+
+</td> </tr>
+<tr> <td align="center">
+<iframe width="640" height="360" src="//www.youtube.com/embed/Z5-vZ-jCf_M?feature=player_detailpage" frameborder="0" allowfullscreen></iframe>
+</td> </tr>
+
+
+<tr> </tr>
+
+<tr> <td>
+
+</td> </tr>
+</table>
+</body>
+
+</HTML>

@@ -1,0 +1,29 @@
+<script type="text/javascript">
+	$(document)
+			.ready(
+					function() {
+						$('#div_scalTable').load('scalability/scalabilityTable.html');
+					})
+</script>
+<H1>Scalability Experiment</H1>
+
+<div>The goal of the scalability experiment is to evaluate the runtime of truth discovery models on large data sets, either varying the number of sources, or the number of objects (and both).
+We generated 10 synthetic data sets for each case: varying the number of sources from 1,000 and 10,000 sources, and the number of data items from 100, 1,000 to 10,000 data items.
+Dependence computation based models exceed the memory consumtion limits, LCA and MLE models faced a computational problem  when the number of sources is gretaer than 5000. 
+Please refer to the paper for details.</div>
+<div>
+The next graphs show the execution time of the algorithms for large data sets. 
+Each value is the average of  execution time over 10 data sets of the same size and same truth discovery scenario (Cov=U25-Conf=U-GT-R).<br/>
+</div>
+<br/>
+
+
+<div style="margin-left:auto; margin-right:auto;">
+<img src="scalability/scalability.png"   width="1500"  />
+</div>
+
+<div style="margin-left:auto; margin-right:auto;">
+<div id="div_scalTable" ></div>
+
+</div>
+<br/><br/>

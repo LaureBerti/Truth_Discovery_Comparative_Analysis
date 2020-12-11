@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN"
+   "http://www.w3.org/TR/html4/frameset.dtd">
+<HTML>
+<HEAD>
+<style type="text/css">
+* { font-family:Arial;}
+.nav li {
+	display: inline;
+	background-color: #dddddd;
+	margin: 0px 0px 25px;
+	border-bottom: #adb1b2 solid 1px;
+	padding: 15px 5px;
+}
+
+.nav ul {
+	margin: 0px;
+	padding: 0px;
+	text-align: center
+}
+
+.nav ul li {
+	margin: 0px;
+	padding: 0px 32px;
+	display: inline;
+	font-size: 18px;
+	list-style-type: none;
+	border-right: #868B8F dotted 2px;
+}
+
+.nav ul li a {
+	display: inline-block;
+	text-decoration: none;
+}
+
+.nav ul li a:hover {
+	text-decoration: underline;
+	cursor: pointer; cursor: hand;
+}
+
+.nav ul li:last-child {
+	border-right: none;
+}
+</style>
+
+<script type="text/javascript" src="allegator/ea/lib/jquery/jquery-1.11.1.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#banner').load('titleFrame.html');
+		$('#content').load('home.html');
+
+		$(function() {
+			$("#nav_home").click(function() {$('#content').load('home.html');});
+			$("#nav_people").click(function() {
+				$('#content').load('People.html');
+			});
+			$("#nav_publications").click(function() {
+				$('#content').load('Publications.html');
+			});
+			$("#nav_news").click(function() {
+				$('#content').load('news.html');
+			});
+			$("#nav_contact").click(function() {
+				$('#content').load('contact_us.html');
+			});
+
+		});
+	})
+</script>
+
+<link type="text/css" rel="stylesheet"
+	href="allegator/ea/lib/syntaxHighlighter/css/SyntaxHighlighter.css"></link>
+<script language="javascript" src="allegator/ea/lib/syntaxHighlighter/js/shCore.js"></script>
+<script language="javascript"
+	src="allegator/ea/lib/syntaxHighlighter/js/shBrushJava.js"></script>
+<script language="javascript"
+	src="allegator/ea/lib/syntaxHighlighter/js/shBrushXml.js"></script>
+
+
+<H1 style="text-align: center">         
+ <div id="banner"><img src="banner.png" />                  </H1>
+
+</HEAD>
+      <div id="banner" ></div>
+<div  style="display: block;">
+	<div class="nav" style="display: block;">
+		<ul>
+			<li><a id="nav_home"><b>Home</b> </a></li>
+			<li><a id="nav_people"><b>People</b></a></li>
+			<li><a id="nav_publications"><b>Publications</b> </a></li>
+			<li><a id="nav_news"><b>What's new?</b></a></li>		
+			<li><a id="nav_contact"><b>Contact us</b></a></li>
+		</ul>
+	</div>
+</div>
+<div id="content" style="margin-left: 10%;margin-right: 10%;"></div>
+<br/><br/><br/><br/>
+</HTML>
